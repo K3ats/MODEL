@@ -156,7 +156,7 @@ def scaling_attack(para_list,m):
         p[i]=para_list[i]*factor
     
     return p
-###
+### https://github.com/zaixizhang/FLDetector/blob/main/byzantine.py
 def mean_attack(para_list,m):
 
     return torch.stack([-para_list[i] for i in range(m)])
