@@ -191,48 +191,17 @@ if __name__ == '__main__':
         
         
         #TD
-        g,distance= crh(uw)
-        
         #TDFL-cos
-        # p=TDFL_cos(uw,0.95)
-        cs=[]
-        for idx in range(len(uw)):
-            cs.append(torch.cosine_similarity(uw[idx],g,dim=0))
-        cs = torch.stack(cs)
-        print(cs)
-        p= np.where(cs>=0.95)
-        
+        p=TDFL_cos(uw,0.95)
         c_record.append(p)
         net_glob.load_state_dict(unflatten(torch.mean(uw[p],dim=0),update[0]))
         # print(attack.__name__,'TDFL_cos',test_img(net_glob,dataset_test,args))
         record.append(test_img(net_glob,dataset_test,args)[0])
         
-        #one_crh
-        # p1=one_crh(uw)
-        distance = distance.numpy()
-        a=np.where(distance > np.mean(distance)-0.1)
-        if len(a[0])>(uw.shape[0]/2):
-            p1= a
-        else : p1= np.delete(np.arange(len(uw)),a)
-        
-        c_record.append(p1)
-        net_glob.load_state_dict(unflatten(torch.mean(uw[p1],dim=0),update[0]))
-        # print(attack.__name__,'one_crh',test_img(net_glob,dataset_test,args))
-        record.append(test_img(net_glob,dataset_test,args)[0])
-        
-        #kmeanscrh
-        # p2=kmeans_crh(uw)
-        
-        re = KMeans(2, random_state=0, n_init="auto").fit(distance.reshape(-1,1)).labels_
-        print(re)
-        if len(np.where(re==0)[0])>len(np.where(re==1)[0]):
-            p2= np.where(re==0)[0]
-        else:
-            p2= np.where(re==1)[0]
-            
-        c_record.append(p2)
-        net_glob.load_state_dict(unflatten(torch.mean(uw[p2],dim=0),update[0]))
-        # print(attack.__name__,'kmeans_crh',test_img(net_glob,dataset_test,args))
+        #model
+        p=MODEL(uw)
+        c_record.append(p)
+        net_glob.load_state_dict(unflatten(torch.mean(uw[p],dim=0),update[0]))
         record.append(test_img(net_glob,dataset_test,args)[0])
         
         sheet1.append(copy.deepcopy(record))
@@ -243,7 +212,7 @@ if __name__ == '__main__':
     f = pd.DataFrame(sheet1,
                     index=['AGR_tailored_attack_on_krum','AGR_tailored_attack_on_trmean','attack_median_and_trimmedmean',
                         'get_malicious_updates_fang','LIE']
-                 ,columns=['mean','median','trim-mean','krum','dnc','TDFL_cos','one_TD','K-TD']
+                 ,columns=['mean','median','trim-mean','krum','dnc','TDFL_cos','MODEL']
                     ).astype(np.float64)
     print(f)
     f.to_excel(writer,sheet_name="table1")

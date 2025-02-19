@@ -100,6 +100,26 @@ def dnc(updates,n_attackers):
     return benign_ids,benign_updates
 
 #
+def crh(all_para,w:None):
+    x = all_para.shape[0]
+    if w == None :
+        w=torch.ones(x)/x
+    v=torch.zeros_like(all_para[0])
+    e=0
+    while(1):
+        s=torch.sum(w)
+        v_hat = torch.sum(torch.stack([w[i]*all_para[i]/s for i in range(x)]),dim=0)
+        d=torch.tensor([torch.sum((all_para[i]-v_hat)**2) for i in range(x)])
+        sd=torch.sum(d)
+        w = torch.log(sd/d)
+        if(torch.sum((v-v_hat)**2)<1e-4):
+            v=copy.deepcopy(v_hat)
+            # print(e,'converge')
+            break
+        v=copy.deepcopy(v_hat)
+        e+=1
+    return v,w
+
 def TDFL_cos(uw,t):
     g,_=crh(uw,None)
     cs=[]
@@ -112,3 +132,28 @@ def TDFL_cos(uw,t):
 ###our 
 ##coming soon
 
+from sklearn.cluster import KMeans
+def MODEL(all_para):
+    x = all_para.shape[0]
+    if w == None :
+        w=torch.ones(x)/x
+    v=torch.zeros_like(all_para[0])
+    e=0
+    while(1):
+        s=torch.sum(w)
+        v_hat = torch.sum(torch.stack([w[i]*all_para[i]/s for i in range(x)]),dim=0)
+        d=torch.tensor([torch.sum((all_para[i]-v_hat)**2) for i in range(x)])
+        sd=torch.sum(d)
+        w = torch.log(sd/d)
+        if(torch.sum((v-v_hat)**2)<1e-4):
+            v=copy.deepcopy(v_hat)
+            # print(e,'converge')
+            break
+        v=copy.deepcopy(v_hat)
+        e+=1
+    re = KMeans(2, random_state=0, n_init="auto").fit(w.reshape(-1,1)).labels_
+    print(re)
+    if len(np.where(re==0)[0])>len(np.where(re==1)[0]):
+        return np.where(re==0)[0]
+    else:
+        return np.where(re==1)[0]
