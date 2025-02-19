@@ -9,6 +9,8 @@ related project:
 
 [A General Framework to Evaluate Robustness of Aggregation Algorithms in Federated Learning](https://github.com/vrt1shjwlkr/NDSS21-Model-Poisoning)
 
+If you use this project in your research or work, please cite it using the following information:
+```bibtex
 @ARTICLE{10680604,
   author={Wu, Minzhe and Zhao, Bowen and Xiao, Yang and Deng, Congjian and Liu, Yuan and Liu, Ximeng},
   journal={IEEE Transactions on Information Forensics and Security}, 
